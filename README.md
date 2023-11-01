@@ -13,3 +13,6 @@ If you want to play against the python version use `python Ofish.py` else you ca
 ![image](https://github.com/Dragjon/Ofish/assets/140328303/8213a675-224a-4fe0-b715-e5b0d2d86b50)
 3) Then you can start playing! Insert moves in <a href="https://en.wikipedia.org/wiki/Algebraic_notation_(chess)">algebraic chess notation</a><br>
 ![image](https://github.com/Dragjon/Ofish/assets/140328303/2717120b-ad14-4811-b47a-afa03c9091e7)
+# Undoing a move
+To undo a move you made, use the command *"undo"*
+![image](https://github.com/Dragjon/Ofish/assets/140328303/56aaf229-6bb1-42b2-afb3-bf17a10dc745)
