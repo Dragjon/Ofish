@@ -97,9 +97,14 @@ A chess playing bot
             except:
                 print("Invalid move! Try again.")
                 continue
-        else:
-            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=board.turn)
+        if (user_color == "w" and board.turn == chess.BLACK):
+            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=1)
             print("AI's move:", move)
+
+        if (user_color == "b" and board.turn == chess.WHITE):
+            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=-1)
+            print("AI's move:", move)
+
         board.push(move)
 
     display_board(board)
