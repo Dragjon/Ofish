@@ -1,4 +1,4 @@
-<img width="866" alt="image" src="https://github.com/Dragjon/Ofish/assets/140328303/c26ede4f-25e1-44a2-a0da-430f4ddcd28a"># Ofish
+# Ofish
  A chess playing bot
 # Description64-3.11
 Building on a previous project to improve the chess playing *Command Line Interface* chess bot to include more functionality
