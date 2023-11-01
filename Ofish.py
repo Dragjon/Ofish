@@ -1,4 +1,3 @@
-# Requires eval.py with class Evaluation
 import chess
 import time
 from eval import Evaluation
@@ -12,7 +11,7 @@ transposition_table = {}
 
 def negamax(board, depth, alpha, beta, color):
     if depth == 0 or board.is_game_over():
-        eval = evaluator.evaluate_board(board)
+        eval = evaluator.evaluate_board(board) if color == chess.WHITE else -evaluator.evaluate_board(board)
         return eval
 
     max_eval = float('-inf')
@@ -23,7 +22,7 @@ def negamax(board, depth, alpha, beta, color):
 
     for move in legal_moves:
         board.push(move)
-        eval = -negamax(board, depth - 1, -beta, -alpha, not color)
+        eval = -negamax(board, depth - 1, -beta, -alpha, -color)
         board.pop()
 
         if eval > max_eval:
@@ -98,15 +97,9 @@ A chess playing bot
             except:
                 print("Invalid move! Try again.")
                 continue
-
-        if (user_color == "white" and board.turn == chess.BLACK):
-            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=-1)
+        else:
+            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=board.turn)
             print("AI's move:", move)
-
-        if (user_color == "black" and board.turn == chess.WHITE):
-            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=1)
-            print("AI's move:", move)
-
         board.push(move)
 
     display_board(board)
@@ -123,7 +116,6 @@ A chess playing bot
             print("You win!")
     else:
         print("It's a draw!")
-
 
 # Create an instance of the Evaluation class
 evaluator = Evaluation()
