@@ -1,3 +1,5 @@
+![image](https://github.com/Dragjon/Ofish/assets/140328303/3d16d0f7-9a55-4e4f-88f3-9eddfce6bae3)
+
 # Ofish
 A chess playing bot
 # Description64-3.11
