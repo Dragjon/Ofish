@@ -13,7 +13,7 @@ executables = [
 
 setup(
     name="Ofish",
-    version="1.0",
+    version="1.1",
     description="Oh No My FiSh",
     executables=executables
 )

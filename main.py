@@ -1,3 +1,4 @@
+# Requires eval.py with class Evaluation
 import chess
 import time
 from eval import Evaluation
@@ -11,7 +12,7 @@ transposition_table = {}
 
 def negamax(board, depth, alpha, beta, color):
     if depth == 0 or board.is_game_over():
-        eval = evaluator.evaluate_board(board) if color == chess.WHITE else -evaluator.evaluate_board(board)
+        eval = evaluator.evaluate_board(board)
         return eval
 
     max_eval = float('-inf')
@@ -22,7 +23,7 @@ def negamax(board, depth, alpha, beta, color):
 
     for move in legal_moves:
         board.push(move)
-        eval = -negamax(board, depth - 1, -beta, -alpha, -color)
+        eval = -negamax(board, depth - 1, -beta, -alpha, not color)
         board.pop()
 
         if eval > max_eval:
@@ -60,7 +61,6 @@ def display_board(board):
 
 def play_chess():
     board = chess.Board()
-    move_stack = []  # Stack to track moves for undo
     print('\n')
     print(r"""
    ___  __ _     _     
@@ -90,57 +90,40 @@ A chess playing bot
         if (user_color == "w" and board.turn == chess.WHITE) or (user_color == "b" and board.turn == chess.BLACK):
             print(" ")
             print(">>")
-            command = input("Enter your move or type 'undo' or 'help': ")
-            
-            if command == "undo" and move_stack:
-                # Undo the last move
-                board.pop()
-                move_stack.pop()
-                board.pop()
-                move_stack.pop()
-                print("\n")
-                continue
-            elif command == "help":
-                print("Commands:")
-                print(" - Enter your move in SAN (Standard Algebraic Notation).")
-                print(" - Type 'undo' to undo your last move.")
-                print(" - Type 'help' to display this message.")
-                print("\n")
-                continue
-            
+            move = input("Enter your move: ")
             try:
-                move = board.parse_san(command)
+                move = board.parse_san(move)
                 if move not in board.legal_moves:
                     raise ValueError
             except:
                 print("Invalid move! Try again.")
                 continue
-        if (user_color == "w" and board.turn == chess.BLACK):
+
+        if (user_color == "white" and board.turn == chess.BLACK):
+            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=-1)
+            print("AI's move:", move)
+
+        if (user_color == "black" and board.turn == chess.WHITE):
             move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=1)
             print("AI's move:", move)
 
-        if (user_color == "b" and board.turn == chess.WHITE):
-            move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=-1)
-            print("AI's move:", move)
-        
-        # Store the move on the stack for undo
-        move_stack.append(move)
-        board.push(move)
+        board.push_uci(move)
 
     display_board(board)
     result = board.result()
     if result == "1-0":
-        if user_color == "w":
+        if user_color == "white":
             print("You win!")
         else:
             print("AI wins!")
     elif result == "0-1":
-        if user_color == "w":
+        if user_color == "white":
             print("AI wins!")
         else:
             print("You win!")
     else:
         print("It's a draw!")
+
 
 # Create an instance of the Evaluation class
 evaluator = Evaluation()
