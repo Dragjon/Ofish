@@ -2,7 +2,7 @@
 
 # Ofish
 A chess playing bot
-# Description64-3.11
+# Description
 Building on a previous project to improve the chess playing *Command Line Interface* chess bot to include more functionality
 # Installation
 Install all required pakages using `pip install -r requirements.txt`
