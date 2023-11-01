@@ -15,4 +15,7 @@ If you want to play against the python version use `python Ofish.py` else you ca
 ![image](https://github.com/Dragjon/Ofish/assets/140328303/2717120b-ad14-4811-b47a-afa03c9091e7)
 # Undoing a move
 To undo a move you made, use the command *"undo"*
-![image](https://github.com/Dragjon/Ofish/assets/140328303/56aaf229-6bb1-42b2-afb3-bf17a10dc745)
+![image](https://github.com/Dragjon/Ofish/assets/140328303/1b00b9dd-8c68-492b-a6fe-823b1ff496fd)
+# Help menu
+To access the help menu use the command *"help"*
+![image](https://github.com/Dragjon/Ofish/assets/140328303/17d29cb5-17c6-4f0d-a08e-5dad6ca476b4)
