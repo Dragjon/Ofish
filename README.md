@@ -19,3 +19,6 @@ To undo a move you made, use the command *"undo"*
 # Help menu
 To access the help menu use the command *"help"*
 ![image](https://github.com/Dragjon/Ofish/assets/140328303/17d29cb5-17c6-4f0d-a08e-5dad6ca476b4)
+# Games it played
+Against SciFish
+<iframe src="https://lichess.org/sn9iFfqF"></iframe>
