@@ -162,7 +162,7 @@ class Evaluation:
                 return 0
         
             num_pieces = len(board.piece_map())
-            if num_pieces <= 12:
+            if num_pieces <= 15:
                 piece_values = piece_values_endgame
                 pawn_square_table = eg_pawn_table
                 knight_square_table = eg_knight_table
