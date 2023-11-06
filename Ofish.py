@@ -78,12 +78,12 @@ A chess playing bot
     # Ask the user for the depth (1-5)
     while True:
         try:
-            depth = int(input("Choose AI depth (1-5): "))
-            if depth < 1 or depth > 5:
+            ini_depth = int(input("Choose AI depth (1-5), choose 0 for adaptive: "))
+            if ini_depth < 0 or ini_depth > 5:
                 raise ValueError
             break
         except ValueError:
-            print("Invalid depth. Please choose a value between 1 and 5.")
+            print("Invalid depth. Please choose a value between 0 and 5.")
     
     while not board.is_game_over():
         display_board(board)
@@ -116,6 +116,25 @@ A chess playing bot
                 print("Invalid move! Try again.")
                 continue
         if (user_color == "w" and board.turn == chess.BLACK):
+            if ini_depth == 0:
+                num_pieces = len(board.piece_map())
+                if (num_pieces > 14) and (ini_depth < 4):
+                    while ini_depth != 4:
+                        ini_depth += 1
+                                  
+                if (num_pieces > 14) and (ini_depth > 4):
+                    while ini_depth != 4:
+                        ini_depth -= 1
+                                                     
+                if (num_pieces < 15) and (ini_depth < 5):
+                    while ini_depth != 5:
+                        ini_depth += 1
+                       
+                if (num_pieces < 15) and (ini_depth > 5):
+                    while ini_depth != 5:
+                        ini_depth -= 1
+
+            depth = ini_depth
             move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=1)
             print("AI's move:", move)
 

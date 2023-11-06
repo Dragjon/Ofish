@@ -158,7 +158,7 @@ class Evaluation:
                     return 10000
                 else:
                     return -10000
-            elif board.can_claim_draw() or board.is_stalemate() or board.is_insufficient_material():
+            elif board.can_claim_draw() or board.can_claim_fifty_moves() or board.is_stalemate() or board.can_claim_threefold_repetition() or board.is_insufficient_material():
                 return 0
         
             num_pieces = len(board.piece_map())
@@ -214,14 +214,14 @@ class Evaluation:
                             score += king_square_table[chess.square_mirror(square)]
                         score += piece_values[piece.piece_type]
         
-            # Evaluate opponent's king mobility when there are 7 or fewer pieces on the board
-            if board.legal_moves.count() <= 7:
+            # Evaluate opponent's king mobility when there are 8 or fewer pieces on the board
+            if board.legal_moves.count() <= 8:
                 opponent_king_square = board.king(not board.turn)
                 opponent_king_mobility = len(board.attacks(opponent_king_square))
                 score += 100 * opponent_king_mobility if board.turn == chess.WHITE else 100 * opponent_king_mobility
         
             # Bonus for pushing pawns when there are less than 10 pieces on the board
-            if board.legal_moves.count() <= 10:
+            if board.legal_moves.count() <= 12:
                 pawn_count = len(board.pieces(chess.PAWN, board.turn))
                 if board.turn == chess.WHITE:
                   score -= 80 * pawn_count
