@@ -9,10 +9,32 @@ history_moves = [[0 for _ in range(64)] for _ in range(64)]
 # Global variable for transposition table
 transposition_table = {}
 
+def quiescence(board, alpha, beta, color):
+    stand_pat = evaluator.evaluate_board(board) if color == chess.WHITE else -evaluator.evaluate_board(board)
+
+    if stand_pat >= beta:
+        return beta
+
+    if alpha < stand_pat:
+        alpha = stand_pat
+
+    for move in board.legal_moves:
+        if board.is_capture(move) or board.gives_check(move):
+            board.push(move)
+            score = -quiescence(board, -beta, -alpha, -color)
+            board.pop()
+
+            if score >= beta:
+                return beta
+
+            if score > alpha:
+                alpha = score
+
+    return alpha
+
 def negamax(board, depth, alpha, beta, color):
     if depth == 0 or board.is_game_over():
-        eval = evaluator.evaluate_board(board) if color == chess.WHITE else -evaluator.evaluate_board(board)
-        return eval
+        return quiescence(board, alpha, beta, color)
 
     max_eval = float('-inf')
     legal_moves = list(board.legal_moves)
