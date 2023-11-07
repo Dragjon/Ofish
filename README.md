@@ -24,3 +24,6 @@ To access the help menu use the command *"help"*
 # Games it played
 Against SciFish <br>
 https://lichess.org/sn9iFfqF
+
+Against me <br>
+https://lichess.org/WDtAkLit#83
