@@ -23,6 +23,6 @@ To access the help menu use the command *"help"*
 ![image](https://github.com/Dragjon/Ofish/assets/140328303/17d29cb5-17c6-4f0d-a08e-5dad6ca476b4)
 # Games it played
 Against SciFish <br>
-https://lichess.org/sn9iFfqF
+https://lichess.org/sn9iFfqF<br>
 Against me <br>
 https://lichess.org/WDtAkLit#83
