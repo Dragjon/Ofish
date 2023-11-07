@@ -9,7 +9,10 @@ history_moves = [[0 for _ in range(64)] for _ in range(64)]
 # Global variable for transposition table
 transposition_table = {}
 
-def quiescence(board, alpha, beta, color):
+def quiescence(board, alpha, beta, color, depth):
+    if depth == 0:
+        return evaluator.evaluate_board(board) if color == chess.WHITE else -evaluator.evaluate_board(board)
+
     stand_pat = evaluator.evaluate_board(board) if color == chess.WHITE else -evaluator.evaluate_board(board)
 
     if stand_pat >= beta:
@@ -21,7 +24,7 @@ def quiescence(board, alpha, beta, color):
     for move in board.legal_moves:
         if board.is_capture(move) or board.gives_check(move):
             board.push(move)
-            score = -quiescence(board, -beta, -alpha, -color)
+            score = -quiescence(board, -beta, -alpha, -color, depth - 1)
             board.pop()
 
             if score >= beta:
@@ -34,7 +37,7 @@ def quiescence(board, alpha, beta, color):
 
 def negamax(board, depth, alpha, beta, color):
     if depth == 0 or board.is_game_over():
-        return quiescence(board, alpha, beta, color)
+        return quiescence(board, alpha, beta, color, 4)  # Limit the quiescence search depth
 
     max_eval = float('-inf')
     legal_moves = list(board.legal_moves)
@@ -161,6 +164,26 @@ A chess playing bot
             print("AI's move:", move)
 
         if (user_color == "b" and board.turn == chess.WHITE):
+            if ini_depth == 0:
+                num_pieces = len(board.piece_map())
+                if (num_pieces > 14) and (ini_depth < 4):
+                    while ini_depth != 4:
+                        ini_depth += 1
+                                  
+                if (num_pieces > 14) and (ini_depth > 4):
+                    while ini_depth != 4:
+                        ini_depth -= 1
+                                                     
+                if (num_pieces < 15) and (ini_depth < 5):
+                    while ini_depth != 5:
+                        ini_depth += 1
+                       
+                if (num_pieces < 15) and (ini_depth > 5):
+                    while ini_depth != 5:
+                        ini_depth -= 1
+
+            depth = ini_depth
+
             move = get_best_move(board, depth, alpha=float('-inf'), beta=float('inf'), color=-1)
             print("AI's move:", move)
         
