@@ -25,4 +25,4 @@ To access the help menu use the command *"help"*
 Against SciFish <br>
 https://lichess.org/sn9iFfqF<br>
 Against me <br>
-https://lichess.org/WDtAkLit#83
+https://lichess.org/WDtAkLit
