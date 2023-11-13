@@ -7,13 +7,13 @@ options = {
 }
 
 executables = [
-    Executable("Ofish.py"),
+    Executable("ofish.py"),
     Executable("eval.py")
 ]
 
 setup(
-    name="Ofish",
-    version="1.1",
-    description="Oh No My FiSh",
+    name="AsPy Fish",
+    version="1.0",
+    description="Ospiring to be a pyfish",
     executables=executables
 )

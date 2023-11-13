@@ -1,204 +1,133 @@
 # Improved Eval
 import chess
 import time
+
 class Evaluation:
-        def evaluate_board(self, board):
-            piece_values_midgame = {
-                chess.PAWN: 82,
-                chess.KNIGHT: 337,
-                chess.BISHOP: 365,
-                chess.ROOK: 477,
-                chess.QUEEN: 1025,
-                chess.KING: 0
-            }
+    def evaluate_board(self, board):
+        piece_values_midgame = {
+            chess.PAWN: 100,
+            chess.KNIGHT: 300,
+            chess.BISHOP: 320,
+            chess.ROOK: 500,
+            chess.QUEEN: 900,
+            chess.KING: 0
+        }
 
-            piece_values_endgame = {
-                chess.PAWN: 94,
-                chess.KNIGHT: 281,
-                chess.BISHOP: 297,
-                chess.ROOK: 512,
-                chess.QUEEN: 936,
-                chess.KING: 0
-            }
+        mg_pawn_table = [
+            0,   0,   0,   0,   0,   0,   0,   0,
+            50,  50,  50,  50,  50,  50,  50,  50,
+            10,  10,  20,  30,  30,  20,  10,  10,
+            5,   5,  10,  25,  25,  10,   5,   5,
+            0,   0,   0,  20,  20,   0,   0,   0,
+            5,  -5, -10,   0,   0, -10,  -5,   5,
+            5,  10,  10, -20, -20,  10,  10,   5,
+            0,   0,   0,   0,   0,   0,   0,   0
+        ]
 
-            mg_pawn_table = [
-              0,   0,   0,   0,   0,   0,  0,   0,
-            -35,  -1, -20, -23, -15,  24, 38, -22,
-            -27,  -2,  -5,  12,  17,   6, 10, -25,
-            -26,  -4,  -4, -10,   3,   3, 33, -12,
-            -14,  13,   6,  21,  23,  12, 17, -23,
-             98, 134,  61,  95,  68, 126, 34, -11,
-             -6,   7,  26,  31,  65,  56, 25, -20,
-              0,   0,   0,   0,   0,   0,  0,   0,
-            ]
+        eg_pawn_table = [
+            0,   0,   0,   0,   0,   0,   0,   0,
+            80,  80,  80,  80,  80,  80,  80,  80,
+            50,  50,  50,  50,  50,  50,  50,  50,
+            30,  30,  30,  30,  30,  30,  30,  30,
+            20,  20,  20,  20,  20,  20,  20,  20,
+            10,  10,  10,  10,  10,  10,  10,  10,
+            10,  10,  10,  10,  10,  10,  10,  10,
+            0,   0,   0,   0,   0,   0,   0,   0
+        ]
 
-            eg_pawn_table = [
-              0,   0,   0,   0,   0,   0,   0,   0,
-            178, 173, 158, 134, 147, 132, 165, 187,
-             94, 100,  85,  67,  56,  53,  82,  84,
-             32,  24,  13,   5,  -2,   4,  17,  17,
-             13,   9,  -3,  -7,  -7,  -8,   3,  -1,
-             13,   8,   8,  10,  13,   0,   2,  -7,
-              4,   7,  -6,   1,   0,  -5,  -1,  -8,
-              0,   0,   0,   0,   0,   0,   0,   0,
-            ]
+        mg_knight_table = [
+            -50,-40,-30,-30,-30,-30,-40,-50,
+            -40,-20,  0,  0,  0,  0,-20,-40,
+            -30,  0, 10, 15, 15, 10,  0,-30,
+            -30,  5, 15, 20, 20, 15,  5,-30,
+            -30,  0, 15, 20, 20, 15,  0,-30,
+            -30,  5, 10, 15, 15, 10,  5,-30,
+            -40,-20,  0,  5,  5,  0,-20,-40,
+            -50,-40,-30,-30,-30,-30,-40,-50,
+        ]
 
-            mg_knight_table = [
-            -167, -89, -34, -49,  61, -97, -15, -107,
-            -105, -21, -58, -33, -17, -28, -19,  -23,
-             -73, -41,  72,  36,  23,  62,   7,  -17,
-             -47,  60,  37,  65,  84, 129,  73,   44,
-             -29, -53, -12,  -3,  -1,  18, -14,  -19,
-             -23,  -9,  12,  10,  19,  17,  25,  -16,
-             -13,   4,  16,  13,  28,  19,  21,   -8,
-              -9,  17,  19,  53,  37,  69,  18,   22,
-            ]
+        mg_bishop_table = [
+            -20,-10,-10,-10,-10,-10,-10,-20,
+            -10,  0,  0,  0,  0,  0,  0,-10,
+            -10,  0,  5, 10, 10,  5,  0,-10,
+            -10,  5,  5, 10, 10,  5,  5,-10,
+            -10,  0, 10, 10, 10, 10,  0,-10,
+            -10, 10, 10, 10, 10, 10, 10,-10,
+            -10,  5,  0,  0,  0,  0,  5,-10,
+            -20,-10,-10,-10,-10,-10,-10,-20,
+        ]
 
-            eg_knight_table = [
-            -58, -38, -13, -28, -31, -27, -63, -99,
-            -42, -20, -10,  -5,  -2, -20, -23, -44,
-            -29, -51, -23, -15, -22, -18, -50, -64,
-            -25,  -8, -25,  -2,  -9, -25, -24, -52,
-            -24, -20,  10,   9,  -1,  -9, -19, -41,
-            -23,  -3,  -1,  15,  10,  -3, -20, -22,
-            -18,  -6,  16,  25,  16,  17,   4, -18,
-            -17,   3,  22,  22,  22,  11,   8, -18,
-            ]
+        mg_rook_table = [
+            0,  0,  0,  0,  0,  0,  0,  0,
+            5, 10, 10, 10, 10, 10, 10,  5,
+            -5,  0,  0,  0,  0,  0,  0, -5,
+            -5,  0,  0,  0,  0,  0,  0, -5,
+            -5,  0,  0,  0,  0,  0,  0, -5,
+            -5,  0,  0,  0,  0,  0,  0, -5,
+            -5,  0,  0,  0,  0,  0,  0, -5,
+            0,  0,  0,  5,  5,  0,  0,  0
+        ]
 
-            mg_bishop_table = [
-            -29,   4, -82, -37, -25, -42,   7,  -8,
-            -33,  -3, -14, -21, -13, -12, -39, -21,
-            -26,  16, -18, -13,  30,  59,  18, -47,
-            -16,  37,  43,  40,  35,  50,  37,  -2,
-             -6,  13,  13,  26,  34,  12,  10,   4,
-             -4,   5,  19,  50,  37,  37,   7,  -2,
-              4,  15,  16,   0,   7,  21,  33,   1,
-              0,  15,  15,  15,  14,  27,  18,  10,
-            ]
+        mg_queen_table = [
+            -20,-10,-10, -5, -5,-10,-10,-20,
+            -10,  0,  0,  0,  0,  0,  0,-10,
+            -10,  0,  5,  5,  5,  5,  0,-10,
+            -5,  0,  5,  5,  5,  5,  0, -5,
+            0,  0,  5,  5,  5,  5,  0, -5,
+            -10,  5,  5,  5,  5,  5,  0,-10,
+            -10,  0,  5,  0,  0,  0,  0,-10,
+            -20,-10,-10, -5, -5,-10,-10,-20
+        ]
 
-            eg_bishop_table = [
-            -14, -21, -11,  -8, -7,  -9, -17, -24,
-            -23,  -9, -23,  -5, -9, -16,  -5, -17,
-            -14, -18,  -7,  -1,  4,  -9, -15, -27,
-            -12,  -3,   8,  10, 13,   3,  -7, -15,
-             -8,  -4,   7, -12, -3, -13,  -4, -14,
-             -6,   3,  13,  19,  7,  10,  -3,  -9,
-             -3,   9,  12,   9, 14,  10,   3,   2,
-              2,  -8,   0,  -1, -2,   6,   0,   4,
-            ]
+        mg_king_table = [
+            -80, -70, -70, -70, -70, -70, -70, -80, 
+            -60, -60, -60, -60, -60, -60, -60, -60, 
+            -40, -50, -50, -60, -60, -50, -50, -40, 
+            -30, -40, -40, -50, -50, -40, -40, -30, 
+            -20, -30, -30, -40, -40, -30, -30, -20, 
+            -10, -20, -20, -20, -20, -20, -20, -10, 
+            20, 20, -5, -5, -5, -5, 20, 20, 
+            20, 30, 10, 0, 0, 10, 30, 20
+        ]
 
-            mg_rook_table = [
-             32,  42,  32,  51, 63,  9,  31,  43,
-            -45, -25, -16, -17,  3,  0,  -5, -33,
-            -44, -16, -20,  -9, -1, 11,  -6, -71,
-            -36, -26, -12,  -1,  9, -7,   6, -23,
-            -24, -11,   7,  26, 24, 35,  -8, -20,
-            -19, -13,   1,  17, 16,  7, -37, -26,
-             27,  32,  58,  62, 80, 67,  26,  44,
-             -5,  19,  26,  36, 17, 45,  61,  16,
-            ]
+        eg_king_table = [
+            -20, -10, -10, -10, -10, -10, -10, -20, 
+            -5, 0, 5, 5, 5, 5, 0, -5,
+            -10, -5, 20, 30, 30, 20, -5, -10, 
+            -15, -10, 35, 45, 45, 35, -10, -15, 
+            -20, -15, 30, 40, 40, 30, -15, -20, 
+            -25, -20, 20, 25, 25, 20, -20, -25, 
+            -30, -25, 0, 0, 0, 0, -25, -30, 
+            -50, -30, -30, -30, -30, -30, -30, -50
+        ]
 
-            eg_rook_table = [
-            13, 10, 18, 15, 12,  12,   8,   5,
-            11, 13, 13, 11, -3,   3,   8,   3,
-            -9,  2,  3, -1, -5, -13,   4, -20,
-            -6, -6,  0,  2, -9,  -9, -11,  -3,
-            -4,  0, -5, -1, -7, -12,  -8, -16,
-             7,  7,  7,  5,  4,  -3,  -5,  -3,
-             4,  3, 13,  1,  2,   1,  -1,   2,
-             3,  5,  8,  4, -5,  -6,  -8, -11,
-            ]
+        if board.is_checkmate():
+            return -10000 if board.turn == chess.WHITE else 10000
+        elif any([
+            board.can_claim_draw(),
+            board.can_claim_fifty_moves(),
+            board.is_stalemate(),
+            board.can_claim_threefold_repetition(),
+            board.is_insufficient_material()
+        ]):
+            return 0
 
-            mg_queen_table = [
-            -28,   0,  29,  12,  59,  44,  43,  45,
-            -24, -39,  -5,   1, -16,  57,  28,  54,
-            -13, -17,   7,   8,  29,  56,  47,  57,
-            -27, -27, -16, -16,  -1,  17,  -2,   1,
-             -9, -26,  -9, -10,  -2,  -4,   3,  -3,
-            -14,   2, -11,  -2,  -5,   2,  14,   5,
-            -35,  -8,  11,   2,   8,  15,  -3,   1,
-             -1, -18,  -9,  10, -15, -25, -31, -50,
-            ]
+        num_pieces = len(board.piece_map())
 
-            eg_queen_table = [
-            -28,   0,  29,  12,  59,  44,  43,  45,
-            -35,  -8,  11,   2,   8,  15,  -3,   1,
-            -27, -27, -16, -16,  -1,  17,  -2,   1,
-            -24, -39,  -5,   1, -16,  57,  28,  54,
-            -14,   2, -11,  -2,  -5,   2,  14,   5,
-            -13, -17,   7,   8,  29,  56,  47,  57,
-             -9, -26,  -9, -10,  -2,  -4,   3,  -3,
-             -1, -18,  -9,  10, -15, -25, -31, -50,
-            ]
-        
-            mg_king_table = [
-            -65,  23,  16, -15, -56, -34,   2,  13,
-            -49,  -1, -27, -39, -46, -44, -33, -51,
-            -17, -20, -12, -27, -30, -25, -14, -36,
-            -15,  36,  12, -54,   8, -28,  24,  14,
-            -14, -14, -22, -46, -44, -30, -15, -27,
-             29,  -1, -20,  -7,  -8,  -4, -38, -29,
-             -9,  24,   2, -16, -20,   6,  22, -22,
-              1,   7,  -8, -64, -43, -16,   9,   8,
-            ]
-        
-            eg_king_table = [
-            -74, -35, -18, -18, -11,  15,   4, -17,
-            -53, -34, -21, -11, -28, -14, -24, -43,
-            -27, -11,   4,  13,  14,   4,  -5, -17,
-            -19,  -3,  11,  21,  23,  16,   7,  -9,
-            -18,  -4,  21,  24,  27,  23,   9, -11,
-            -12,  17,  14,  17,  17,  38,  23,  11,
-             10,  17,  23,  15,  20,  45,  44,  13,
-             -8,  22,  24,  27,  26,  33,  26,   3,
-            ]
-        
-            if board.is_checkmate():
-                if board.turn == chess.WHITE:
-                    return 10000
-                else:
-                    return -10000
-            elif board.can_claim_draw() or board.can_claim_fifty_moves() or board.is_stalemate() or board.can_claim_threefold_repetition() or board.is_insufficient_material():
-                return 0
-        
-            num_pieces = len(board.piece_map())
-            if num_pieces <= 15:
-                piece_values = piece_values_endgame
-                pawn_square_table = eg_pawn_table
-                knight_square_table = eg_knight_table
-                bishop_square_table = eg_bishop_table
-                rook_square_table = eg_rook_table
-                queen_square_table = eg_queen_table
-                king_square_table = eg_king_table
-            else:
-                piece_values = piece_values_midgame
-                pawn_square_table = mg_pawn_table
-                knight_square_table = mg_knight_table
-                bishop_square_table = mg_bishop_table
-                rook_square_table = mg_rook_table
-                queen_square_table = mg_queen_table
-                king_square_table = mg_king_table
-        
-            score = 0
-            for square in chess.SQUARES:
+        piece_values = piece_values_midgame
+        knight_square_table = mg_knight_table
+        bishop_square_table = mg_bishop_table
+        rook_square_table = mg_rook_table
+        queen_square_table = mg_queen_table
+
+        pawn_square_table = eg_pawn_table if num_pieces <= 15 else mg_pawn_table
+        king_square_table = eg_king_table if num_pieces <= 15 else mg_king_table
+
+        score = 0
+        for square in chess.SQUARES:
                 piece = board.piece_at(square)
                 if piece is not None:
                     if piece.color == chess.WHITE:
-        
-                        if piece.piece_type == chess.PAWN:
-                            score -= pawn_square_table[square]
-                        if piece.piece_type == chess.KNIGHT:
-                            score -= knight_square_table[square]
-                        if piece.piece_type == chess.BISHOP:
-                            score -= bishop_square_table[square]
-                        if piece.piece_type == chess.ROOK:
-                            score -= rook_square_table[square]
-                        if piece.piece_type == chess.QUEEN:
-                            score -= queen_square_table[square]
-                        if piece.piece_type == chess.KING:
-                            score -= king_square_table[square]
-                        score -= piece_values[piece.piece_type]
-                    else:
         
                         if piece.piece_type == chess.PAWN:
                             score += pawn_square_table[chess.square_mirror(square)]
@@ -213,19 +142,20 @@ class Evaluation:
                         if piece.piece_type == chess.KING:
                             score += king_square_table[chess.square_mirror(square)]
                         score += piece_values[piece.piece_type]
+                    else:
         
-            # Evaluate opponent's king mobility when there are 8 or fewer pieces on the board
-            if board.legal_moves.count() <= 8:
-                opponent_king_square = board.king(not board.turn)
-                opponent_king_mobility = len(board.attacks(opponent_king_square))
-                score += 100 * opponent_king_mobility if board.turn == chess.WHITE else 100 * opponent_king_mobility
-        
-            # Bonus for pushing pawns when there are less than 10 pieces on the board
-            if board.legal_moves.count() <= 12:
-                pawn_count = len(board.pieces(chess.PAWN, board.turn))
-                if board.turn == chess.WHITE:
-                  score -= 80 * pawn_count
-                else:
-                  score += 80 * pawn_count
+                        if piece.piece_type == chess.PAWN:
+                            score -= pawn_square_table[square]
+                        if piece.piece_type == chess.KNIGHT:
+                            score -= knight_square_table[square]
+                        if piece.piece_type == chess.BISHOP:
+                            score -= bishop_square_table[square]
+                        if piece.piece_type == chess.ROOK:
+                            score -= rook_square_table[square]
+                        if piece.piece_type == chess.QUEEN:
+                            score -= queen_square_table[square]
+                        if piece.piece_type == chess.KING:
+                            score -= king_square_table[square]
+                        score -= piece_values[piece.piece_type]
 
-            return score
+        return score
